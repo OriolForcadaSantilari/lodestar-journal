@@ -9,6 +9,9 @@ import {
   View,
 } from 'react-native';
 import { obtenerTodasLasEntradas } from '../storage';
+import { stardateDesdeClave } from '../preguntas';
+import { colors, font, glow } from '../theme';
+import CRTScreen from '../components/CRTScreen';
 
 export default function HistoryScreen({ navigation }) {
   const { t } = useTranslation();
@@ -33,82 +36,98 @@ export default function HistoryScreen({ navigation }) {
 
   if (entradas !== null && entradas.length === 0) {
     return (
-      <View style={styles.vacioContenedor}>
-        <Text style={styles.vacioTexto}>{t('history.empty')}</Text>
-      </View>
+      <CRTScreen>
+        <View style={styles.vacioContenedor}>
+          <Text style={styles.vacioTexto}>{t('history.empty')}</Text>
+        </View>
+      </CRTScreen>
     );
   }
 
   return (
-    <FlatList
-      style={styles.lista}
-      contentContainerStyle={styles.listaContenido}
-      data={entradas || []}
-      keyExtractor={(item) => item.clave}
-      renderItem={({ item }) => (
-        <TouchableOpacity
-          style={styles.item}
-          activeOpacity={0.7}
-          onPress={() =>
-            navigation.navigate('EntryDetail', { clave: item.clave })
-          }
-        >
-          <Text style={styles.itemFecha}>{item.fecha}</Text>
-          <Text style={styles.itemPregunta} numberOfLines={2}>
-            {item.pregunta}
-          </Text>
-          <Text style={styles.itemRespuesta} numberOfLines={2}>
-            {item.respuesta}
-          </Text>
-        </TouchableOpacity>
-      )}
-    />
+    <CRTScreen>
+      <FlatList
+        style={styles.lista}
+        contentContainerStyle={styles.listaContenido}
+        data={entradas || []}
+        keyExtractor={(item) => item.clave}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            style={styles.item}
+            activeOpacity={0.7}
+            onPress={() =>
+              navigation.navigate('EntryDetail', { clave: item.clave })
+            }
+          >
+            <Text style={styles.itemStardate}>
+              {'> STARDATE ' + stardateDesdeClave(item.clave)}
+            </Text>
+            <Text style={styles.itemFecha}>{item.fecha}</Text>
+            <Text style={styles.itemPregunta} numberOfLines={2}>
+              {item.pregunta}
+            </Text>
+            <Text style={styles.itemRespuesta} numberOfLines={2}>
+              {item.respuesta}
+            </Text>
+          </TouchableOpacity>
+        )}
+      />
+    </CRTScreen>
   );
 }
 
 const styles = StyleSheet.create({
   lista: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
   },
   listaContenido: {
     padding: 20,
   },
   item: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ECE9E2',
-    padding: 20,
+    borderColor: colors.greenFaint,
+    padding: 18,
     marginBottom: 14,
   },
-  itemFecha: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#2B2B2B',
-    marginBottom: 6,
+  itemStardate: {
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.green,
+    ...glow(),
+    marginBottom: 2,
   },
-  itemPregunta: {
-    fontSize: 13,
-    color: '#9A958C',
+  itemFecha: {
+    fontFamily: font,
+    fontSize: 16,
+    color: colors.greenDim,
     marginBottom: 10,
   },
+  itemPregunta: {
+    fontFamily: font,
+    fontSize: 18,
+    color: colors.greenDim,
+    marginBottom: 8,
+  },
   itemRespuesta: {
-    fontSize: 15,
-    lineHeight: 22,
-    color: '#5C594F',
+    fontFamily: font,
+    fontSize: 20,
+    lineHeight: 24,
+    color: colors.green,
   },
   vacioContenedor: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 28,
   },
   vacioTexto: {
-    fontSize: 18,
-    lineHeight: 28,
-    color: '#9A958C',
+    fontFamily: font,
+    fontSize: 24,
+    lineHeight: 32,
+    color: colors.green,
+    ...glow(),
     textAlign: 'center',
   },
 });

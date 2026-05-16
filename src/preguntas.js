@@ -29,6 +29,16 @@ export function claveFecha(fecha) {
   return `${anio}-${mes}-${dia}`;
 }
 
+// Stardate a partir de una clave YYYY-MM-DD -> "YYYY.MM.DD".
+export function stardateDesdeClave(clave) {
+  return clave.replace(/-/g, '.');
+}
+
+// Stardate a partir de un Date -> "YYYY.MM.DD".
+export function stardate(fecha) {
+  return stardateDesdeClave(claveFecha(fecha));
+}
+
 // Convierte una clave YYYY-MM-DD de vuelta a un Date local.
 export function fechaDesdeClave(clave) {
   const [anio, mes, dia] = clave.split('-').map(Number);

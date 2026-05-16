@@ -17,6 +17,8 @@ import {
   scheduleDailyReminder,
   sendTestNotification,
 } from '../notifications';
+import { colors, font, glow } from '../theme';
+import CRTScreen from '../components/CRTScreen';
 
 function fechaDesde(hora, minuto) {
   const d = new Date();
@@ -94,78 +96,83 @@ export default function SettingsScreen({ navigation }) {
   };
 
   if (cargando) {
-    return <View style={styles.contenedor} />;
+    return <CRTScreen><View style={styles.contenedor} /></CRTScreen>;
   }
 
   return (
-    <View style={styles.contenedor}>
-      <View style={styles.fila}>
-        <Text style={styles.label}>{t('settings.reminderLabel')}</Text>
-        <Switch
-          value={activo}
-          onValueChange={alCambiarSwitch}
-          trackColor={{ false: '#D8D4CC', true: '#2B2B2B' }}
-          thumbColor="#FFFFFF"
-        />
-      </View>
-
-      {permisoDenegado && (
-        <Text style={styles.aviso}>{t('settings.permissionDenied')}</Text>
-      )}
-
-      {activo && (
-        <View style={styles.bloqueHora}>
-          <Text style={styles.label}>{t('settings.timeLabel')}</Text>
-          {Platform.OS === 'ios' ? (
-            <DateTimePicker
-              value={hora}
-              mode="time"
-              display="spinner"
-              onChange={alCambiarHora}
-              style={styles.picker}
-            />
-          ) : (
-            <>
-              <TouchableOpacity
-                style={styles.botonHora}
-                onPress={() => setMostrarPicker(true)}
-                activeOpacity={0.8}
-              >
-                <Text style={styles.botonHoraTexto}>
-                  {String(hora.getHours()).padStart(2, '0')}:
-                  {String(hora.getMinutes()).padStart(2, '0')}
-                </Text>
-              </TouchableOpacity>
-              {mostrarPicker && (
-                <DateTimePicker
-                  value={hora}
-                  mode="time"
-                  display="default"
-                  onChange={alCambiarHora}
-                />
-              )}
-            </>
-          )}
+    <CRTScreen>
+      <View style={styles.contenedor}>
+        <View style={styles.fila}>
+          <Text style={styles.label}>{t('settings.reminderLabel')}</Text>
+          <Switch
+            value={activo}
+            onValueChange={alCambiarSwitch}
+            trackColor={{ false: colors.greenFaint, true: colors.greenDim }}
+            thumbColor={activo ? colors.green : colors.surface}
+            ios_backgroundColor={colors.greenFaint}
+          />
         </View>
-      )}
 
-      <TouchableOpacity
-        style={styles.botonPrueba}
-        onPress={sendTestNotification}
-        activeOpacity={0.7}
-      >
-        <Text style={styles.botonPruebaTexto}>
-          {t('settings.testButton')}
-        </Text>
-      </TouchableOpacity>
-    </View>
+        {permisoDenegado && (
+          <Text style={styles.aviso}>{t('settings.permissionDenied')}</Text>
+        )}
+
+        {activo && (
+          <View style={styles.bloqueHora}>
+            <Text style={styles.label}>{t('settings.timeLabel')}</Text>
+            {Platform.OS === 'ios' ? (
+              <DateTimePicker
+                value={hora}
+                mode="time"
+                display="spinner"
+                onChange={alCambiarHora}
+                themeVariant="dark"
+                textColor={colors.green}
+                accentColor={colors.green}
+                style={styles.picker}
+              />
+            ) : (
+              <>
+                <TouchableOpacity
+                  style={styles.botonHora}
+                  onPress={() => setMostrarPicker(true)}
+                  activeOpacity={0.7}
+                >
+                  <Text style={styles.botonHoraTexto}>
+                    {String(hora.getHours()).padStart(2, '0')}:
+                    {String(hora.getMinutes()).padStart(2, '0')}
+                  </Text>
+                </TouchableOpacity>
+                {mostrarPicker && (
+                  <DateTimePicker
+                    value={hora}
+                    mode="time"
+                    display="default"
+                    onChange={alCambiarHora}
+                  />
+                )}
+              </>
+            )}
+          </View>
+        )}
+
+        <TouchableOpacity
+          style={styles.botonPrueba}
+          onPress={sendTestNotification}
+          activeOpacity={0.7}
+        >
+          <Text style={styles.botonPruebaTexto}>
+            {t('settings.testButton')}
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </CRTScreen>
   );
 }
 
 const styles = StyleSheet.create({
   contenedor: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
     paddingHorizontal: 28,
     paddingVertical: 32,
   },
@@ -175,14 +182,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   label: {
-    fontSize: 17,
-    color: '#2B2B2B',
-    fontWeight: '600',
+    fontFamily: font,
+    fontSize: 24,
+    color: colors.green,
+    ...glow(),
   },
   aviso: {
-    fontSize: 14,
-    lineHeight: 21,
-    color: '#9A958C',
+    fontFamily: font,
+    fontSize: 20,
+    lineHeight: 26,
+    color: colors.greenDim,
     marginTop: 16,
   },
   bloqueHora: {
@@ -194,18 +203,19 @@ const styles = StyleSheet.create({
   },
   botonHora: {
     marginTop: 14,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ECE9E2',
+    borderColor: colors.green,
     paddingVertical: 16,
     alignItems: 'center',
   },
   botonHoraTexto: {
-    fontSize: 20,
-    fontWeight: '600',
-    color: '#2B2B2B',
-    letterSpacing: 1,
+    fontFamily: font,
+    fontSize: 28,
+    color: colors.green,
+    ...glow(),
+    letterSpacing: 2,
   },
   botonPrueba: {
     marginTop: 'auto',
@@ -213,8 +223,8 @@ const styles = StyleSheet.create({
     paddingVertical: 14,
   },
   botonPruebaTexto: {
-    fontSize: 14,
-    color: '#9A958C',
-    textDecorationLine: 'underline',
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.greenDim,
   },
 });

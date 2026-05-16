@@ -1,35 +1,37 @@
 {
   "today": {
-    "title": "Hoy",
-    "placeholder": "Escribe aquí...",
-    "save": "Guardar",
-    "update": "Actualizar",
-    "saved": "Guardado ✓",
-    "savedMessage": "Tu respuesta se ha registrado por hoy. ✨",
-    "emptyError": "Escribe algo antes de guardar",
-    "emptyErrorTitle": "Aún no has escrito nada",
-    "saveError": "No se pudo guardar",
-    "historyButton": "Historial",
-    "settingsButton": "Ajustes"
+    "title": "DIARIO DE A BORDO",
+    "stardate": "> STARDATE {{date}}",
+    "queryLog": "> QUERY_LOG:",
+    "placeholder": "> _ introduce tu registro...",
+    "save": "[ GUARDAR REGISTRO ]",
+    "update": "[ ACTUALIZAR REGISTRO ]",
+    "saved": "REGISTRO GUARDADO",
+    "savedMessage": "Entrada archivada en el diario de a bordo. ✦",
+    "emptyError": "Introduce tu registro antes de archivarlo.",
+    "emptyErrorTitle": "REGISTRO VACÍO",
+    "saveError": "No se pudo archivar el registro",
+    "historyButton": "ARCHIVO",
+    "settingsButton": "CONTROL"
   },
   "history": {
-    "title": "Historial",
-    "empty": "Aún no hay entradas. Vuelve mañana.",
-    "delete": "Borrar",
-    "deleteConfirmTitle": "Borrar entrada",
-    "deleteConfirmMessage": "¿Seguro que quieres borrar esta entrada? No se puede deshacer.",
-    "cancel": "Cancelar"
+    "title": "ARCHIVO",
+    "empty": "> NO HAY REGISTROS. VUELVE EN EL PRÓXIMO CICLO.",
+    "delete": "[ BORRAR ]",
+    "deleteConfirmTitle": "ELIMINAR REGISTRO",
+    "deleteConfirmMessage": "¿Eliminar este registro permanentemente del diario de a bordo? No se puede deshacer.",
+    "cancel": "CANCELAR"
   },
   "detail": {
-    "title": "Entrada"
+    "title": "REGISTRO // STARDATE {{date}}"
   },
   "settings": {
-    "title": "Ajustes",
-    "reminderLabel": "Recordatorio diario",
-    "permissionDenied": "Las notificaciones están desactivadas. Actívalas en los Ajustes de iOS para recibir tu recordatorio diario.",
-    "timeLabel": "Hora del recordatorio",
-    "testButton": "Enviar notificación de prueba",
-    "notificationTitle": "Tu momento de hoy",
-    "notificationBody": "Una pregunta te espera. ¿Qué tienes que contarte?"
+    "title": "PANEL DE CONTROL",
+    "reminderLabel": "RECORDATORIO DIARIO",
+    "permissionDenied": "> NOTIFICACIONES DESACTIVADAS. Actívalas en los Ajustes de iOS para recibir el aviso de bitácora.",
+    "timeLabel": "HORA DEL AVISO",
+    "testButton": "[ ENVIAR SEÑAL DE PRUEBA ]",
+    "notificationTitle": "BITÁCORA PENDIENTE",
+    "notificationBody": "El diario de a bordo espera tu registro de hoy."
   }
 }

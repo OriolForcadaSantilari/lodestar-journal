@@ -1,4 +1,4 @@
-import { useCallback, useLayoutEffect, useState } from 'react';
+import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import {
@@ -10,10 +10,14 @@ import {
   View,
 } from 'react-native';
 import { borrarEntrada, obtenerEntrada } from '../storage';
+import { stardateDesdeClave } from '../preguntas';
+import { colors, font, glow } from '../theme';
+import CRTScreen from '../components/CRTScreen';
 
 export default function EntryDetailScreen({ navigation, route }) {
   const { t } = useTranslation();
   const { clave } = route.params;
+  const stardateTexto = useMemo(() => stardateDesdeClave(clave), [clave]);
   const [entrada, setEntrada] = useState(null);
 
   useFocusEffect(
@@ -30,7 +34,7 @@ export default function EntryDetailScreen({ navigation, route }) {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      title: t('detail.title'),
+      title: t('detail.title', { date: stardateTexto }),
       headerRight: () => (
         <TouchableOpacity
           onPress={() =>
@@ -55,51 +59,61 @@ export default function EntryDetailScreen({ navigation, route }) {
         </TouchableOpacity>
       ),
     });
-  }, [navigation, clave, t]);
-
-  if (!entrada) {
-    return <View style={styles.flex} />;
-  }
+  }, [navigation, clave, stardateTexto, t]);
 
   return (
-    <ScrollView style={styles.flex} contentContainerStyle={styles.contenido}>
-      <Text style={styles.fecha}>{entrada.fecha}</Text>
-      <Text style={styles.pregunta}>{entrada.pregunta}</Text>
-      <Text style={styles.respuesta}>{entrada.respuesta}</Text>
-    </ScrollView>
+    <CRTScreen>
+      {entrada && (
+        <ScrollView style={styles.flex} contentContainerStyle={styles.contenido}>
+          <Text style={styles.stardate}>{'> STARDATE ' + stardateTexto}</Text>
+          <Text style={styles.fecha}>{entrada.fecha}</Text>
+          <Text style={styles.pregunta}>{entrada.pregunta}</Text>
+          <Text style={styles.respuesta}>{entrada.respuesta}</Text>
+        </ScrollView>
+      )}
+    </CRTScreen>
   );
 }
 
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
   },
   contenido: {
     paddingHorizontal: 28,
-    paddingVertical: 36,
+    paddingVertical: 32,
+  },
+  stardate: {
+    fontFamily: font,
+    fontSize: 26,
+    color: colors.green,
+    ...glow(),
+    marginBottom: 2,
   },
   fecha: {
-    fontSize: 24,
-    fontWeight: '700',
-    color: '#2B2B2B',
-    marginBottom: 20,
+    fontFamily: font,
+    fontSize: 18,
+    color: colors.greenDim,
+    marginBottom: 28,
   },
   pregunta: {
-    fontSize: 18,
-    lineHeight: 26,
-    fontWeight: '600',
-    color: '#9A958C',
+    fontFamily: font,
+    fontSize: 24,
+    lineHeight: 30,
+    color: colors.greenDim,
     marginBottom: 24,
   },
   respuesta: {
-    fontSize: 18,
-    lineHeight: 28,
-    color: '#2B2B2B',
+    fontFamily: font,
+    fontSize: 24,
+    lineHeight: 32,
+    color: colors.green,
+    ...glow(),
   },
   borrar: {
-    fontSize: 16,
-    color: '#C0392B',
-    fontWeight: '600',
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.danger,
+    ...glow(colors.danger, 5),
   },
 });

@@ -16,8 +16,12 @@ import {
   claveFecha,
   formatearFecha,
   preguntaDelDia,
+  stardate,
 } from '../preguntas';
 import { guardarEntrada, obtenerEntrada } from '../storage';
+import { colors, font, glow } from '../theme';
+import CRTScreen from '../components/CRTScreen';
+import Typewriter from '../components/Typewriter';
 
 const LIMITE = 280;
 
@@ -26,17 +30,18 @@ export default function TodayScreen({ navigation }) {
   const hoy = useMemo(() => new Date(), []);
   const clave = useMemo(() => claveFecha(hoy), [hoy]);
   const fechaTexto = useMemo(() => formatearFecha(hoy), [hoy]);
+  const stardateTexto = useMemo(() => stardate(hoy), [hoy]);
   const pregunta = useMemo(() => preguntaDelDia(hoy), [hoy]);
   const [respuesta, setRespuesta] = useState('');
+  const [cargado, setCargado] = useState(false);
+  const [yaTeniaRegistro, setYaTeniaRegistro] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       title: t('today.title'),
       headerLeft: () => (
         <TouchableOpacity onPress={() => navigation.navigate('Settings')}>
-          <Text style={styles.headerBoton}>
-            ⚙ {t('today.settingsButton')}
-          </Text>
+          <Text style={styles.headerBoton}>{t('today.settingsButton')}</Text>
         </TouchableOpacity>
       ),
       headerRight: () => (
@@ -52,7 +57,12 @@ export default function TodayScreen({ navigation }) {
     useCallback(() => {
       let activo = true;
       obtenerEntrada(clave).then((entrada) => {
-        if (activo && entrada) setRespuesta(entrada.respuesta);
+        if (!activo) return;
+        if (entrada) {
+          setRespuesta(entrada.respuesta);
+          setYaTeniaRegistro(true);
+        }
+        setCargado(true);
       });
       return () => {
         activo = false;
@@ -75,51 +85,63 @@ export default function TodayScreen({ navigation }) {
   };
 
   return (
-    <KeyboardAvoidingView
-      style={styles.flex}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-    >
-      <ScrollView
-        contentContainerStyle={styles.scroll}
-        keyboardShouldPersistTaps="handled"
+    <CRTScreen>
+      <KeyboardAvoidingView
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       >
-        <View style={styles.contenido}>
-          <Text style={styles.fecha}>{fechaTexto}</Text>
+        <ScrollView
+          contentContainerStyle={styles.scroll}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View style={styles.contenido}>
+            <Text style={styles.stardate}>
+              {t('today.stardate', { date: stardateTexto })}
+            </Text>
+            <Text style={styles.fecha}>{fechaTexto}</Text>
 
-          <Text style={styles.pregunta}>{pregunta}</Text>
+            <Text style={styles.queryLog}>{t('today.queryLog')}</Text>
+            {cargado && (
+              <Typewriter
+                text={pregunta}
+                animate={!yaTeniaRegistro}
+                speed={40}
+                style={styles.pregunta}
+              />
+            )}
 
-          <TextInput
-            style={styles.input}
-            placeholder={t('today.placeholder')}
-            placeholderTextColor="#B0B0B0"
-            multiline
-            maxLength={LIMITE}
-            value={respuesta}
-            onChangeText={setRespuesta}
-            textAlignVertical="top"
-          />
+            <TextInput
+              style={styles.input}
+              placeholder={t('today.placeholder')}
+              placeholderTextColor={colors.greenDim}
+              multiline
+              maxLength={LIMITE}
+              value={respuesta}
+              onChangeText={setRespuesta}
+              textAlignVertical="top"
+            />
 
-          <Text style={styles.contador}>
-            {respuesta.length} / {LIMITE}
-          </Text>
+            <Text style={styles.contador}>
+              {respuesta.length} / {LIMITE}
+            </Text>
 
-          <TouchableOpacity
-            style={styles.boton}
-            onPress={guardar}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.botonTexto}>{t('today.save')}</Text>
-          </TouchableOpacity>
-        </View>
-      </ScrollView>
-    </KeyboardAvoidingView>
+            <TouchableOpacity
+              style={styles.boton}
+              onPress={guardar}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.botonTexto}>{t('today.save')}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </CRTScreen>
   );
 }
 
 const styles = StyleSheet.create({
   flex: {
     flex: 1,
-    backgroundColor: '#FAF9F6',
   },
   scroll: {
     flexGrow: 1,
@@ -130,54 +152,71 @@ const styles = StyleSheet.create({
   contenido: {
     width: '100%',
   },
+  stardate: {
+    fontFamily: font,
+    fontSize: 22,
+    color: colors.green,
+    ...glow(),
+    marginBottom: 2,
+  },
   fecha: {
-    fontSize: 15,
-    color: '#9A958C',
-    textAlign: 'center',
-    letterSpacing: 0.5,
-    marginBottom: 28,
+    fontFamily: font,
+    fontSize: 18,
+    color: colors.greenDim,
+    marginBottom: 32,
+  },
+  queryLog: {
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.greenDim,
+    marginBottom: 10,
   },
   pregunta: {
-    fontSize: 26,
-    lineHeight: 36,
-    fontWeight: '600',
-    color: '#2B2B2B',
-    textAlign: 'center',
+    fontFamily: font,
+    fontSize: 38,
+    lineHeight: 44,
+    color: colors.green,
+    ...glow(colors.green, 8),
     marginBottom: 36,
   },
   input: {
-    minHeight: 140,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    minHeight: 150,
+    backgroundColor: colors.surface,
+    borderRadius: 4,
     borderWidth: 1,
-    borderColor: '#ECE9E2',
-    padding: 18,
-    fontSize: 17,
-    lineHeight: 24,
-    color: '#2B2B2B',
+    borderColor: colors.greenFaint,
+    padding: 16,
+    fontFamily: font,
+    fontSize: 22,
+    lineHeight: 26,
+    color: colors.green,
   },
   contador: {
-    fontSize: 13,
-    color: '#B0ABA1',
+    fontFamily: font,
+    fontSize: 18,
+    color: colors.greenDim,
     textAlign: 'right',
     marginTop: 10,
     marginBottom: 32,
   },
   boton: {
-    backgroundColor: '#2B2B2B',
-    borderRadius: 16,
+    backgroundColor: colors.surface,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: colors.green,
     paddingVertical: 16,
     alignItems: 'center',
   },
   botonTexto: {
-    color: '#FFFFFF',
-    fontSize: 17,
-    fontWeight: '600',
-    letterSpacing: 0.5,
+    fontFamily: font,
+    color: colors.green,
+    fontSize: 24,
+    ...glow(),
   },
   headerBoton: {
-    fontSize: 16,
-    color: '#2B2B2B',
-    fontWeight: '600',
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.green,
+    ...glow(),
   },
 });
