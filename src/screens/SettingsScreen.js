@@ -1,0 +1,220 @@
+import { useCallback, useLayoutEffect, useState } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
+import { useTranslation } from 'react-i18next';
+import {
+  Platform,
+  StyleSheet,
+  Switch,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { obtenerAjustes, guardarAjustes } from '../storage';
+import {
+  cancelDailyReminder,
+  requestPermissions,
+  scheduleDailyReminder,
+  sendTestNotification,
+} from '../notifications';
+
+function fechaDesde(hora, minuto) {
+  const d = new Date();
+  d.setHours(hora, minuto, 0, 0);
+  return d;
+}
+
+export default function SettingsScreen({ navigation }) {
+  const { t } = useTranslation();
+  const [cargando, setCargando] = useState(true);
+  const [activo, setActivo] = useState(false);
+  const [hora, setHora] = useState(fechaDesde(21, 0));
+  const [permisoDenegado, setPermisoDenegado] = useState(false);
+  const [mostrarPicker, setMostrarPicker] = useState(false);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({ title: t('settings.title') });
+  }, [navigation, t]);
+
+  // Al abrir, refleja el estado realmente guardado.
+  useFocusEffect(
+    useCallback(() => {
+      let activoEfecto = true;
+      obtenerAjustes().then((aj) => {
+        if (!activoEfecto) return;
+        setActivo(aj.recordatorioActivo);
+        setHora(fechaDesde(aj.hora, aj.minuto));
+        setCargando(false);
+      });
+      return () => {
+        activoEfecto = false;
+      };
+    }, [])
+  );
+
+  const persistir = async (recordatorioActivo, fecha) => {
+    await guardarAjustes({
+      recordatorioActivo,
+      hora: fecha.getHours(),
+      minuto: fecha.getMinutes(),
+    });
+  };
+
+  const alCambiarSwitch = async (valor) => {
+    if (valor) {
+      const concedido = await requestPermissions();
+      if (!concedido) {
+        setPermisoDenegado(true);
+        setActivo(false);
+        await persistir(false, hora);
+        return;
+      }
+      setPermisoDenegado(false);
+      setActivo(true);
+      await persistir(true, hora);
+      await scheduleDailyReminder(hora.getHours(), hora.getMinutes());
+    } else {
+      setActivo(false);
+      await persistir(false, hora);
+      await cancelDailyReminder();
+    }
+  };
+
+  const alCambiarHora = async (evento, seleccionada) => {
+    if (Platform.OS === 'android') setMostrarPicker(false);
+    if (evento?.type === 'dismissed' || !seleccionada) return;
+    setHora(seleccionada);
+    await persistir(activo, seleccionada);
+    if (activo) {
+      await scheduleDailyReminder(
+        seleccionada.getHours(),
+        seleccionada.getMinutes()
+      );
+    }
+  };
+
+  if (cargando) {
+    return <View style={styles.contenedor} />;
+  }
+
+  return (
+    <View style={styles.contenedor}>
+      <View style={styles.fila}>
+        <Text style={styles.label}>{t('settings.reminderLabel')}</Text>
+        <Switch
+          value={activo}
+          onValueChange={alCambiarSwitch}
+          trackColor={{ false: '#D8D4CC', true: '#2B2B2B' }}
+          thumbColor="#FFFFFF"
+        />
+      </View>
+
+      {permisoDenegado && (
+        <Text style={styles.aviso}>{t('settings.permissionDenied')}</Text>
+      )}
+
+      {activo && (
+        <View style={styles.bloqueHora}>
+          <Text style={styles.label}>{t('settings.timeLabel')}</Text>
+          {Platform.OS === 'ios' ? (
+            <DateTimePicker
+              value={hora}
+              mode="time"
+              display="spinner"
+              onChange={alCambiarHora}
+              style={styles.picker}
+            />
+          ) : (
+            <>
+              <TouchableOpacity
+                style={styles.botonHora}
+                onPress={() => setMostrarPicker(true)}
+                activeOpacity={0.8}
+              >
+                <Text style={styles.botonHoraTexto}>
+                  {String(hora.getHours()).padStart(2, '0')}:
+                  {String(hora.getMinutes()).padStart(2, '0')}
+                </Text>
+              </TouchableOpacity>
+              {mostrarPicker && (
+                <DateTimePicker
+                  value={hora}
+                  mode="time"
+                  display="default"
+                  onChange={alCambiarHora}
+                />
+              )}
+            </>
+          )}
+        </View>
+      )}
+
+      <TouchableOpacity
+        style={styles.botonPrueba}
+        onPress={sendTestNotification}
+        activeOpacity={0.7}
+      >
+        <Text style={styles.botonPruebaTexto}>
+          {t('settings.testButton')}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  contenedor: {
+    flex: 1,
+    backgroundColor: '#FAF9F6',
+    paddingHorizontal: 28,
+    paddingVertical: 32,
+  },
+  fila: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  label: {
+    fontSize: 17,
+    color: '#2B2B2B',
+    fontWeight: '600',
+  },
+  aviso: {
+    fontSize: 14,
+    lineHeight: 21,
+    color: '#9A958C',
+    marginTop: 16,
+  },
+  bloqueHora: {
+    marginTop: 32,
+  },
+  picker: {
+    marginTop: 8,
+    alignSelf: 'center',
+  },
+  botonHora: {
+    marginTop: 14,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#ECE9E2',
+    paddingVertical: 16,
+    alignItems: 'center',
+  },
+  botonHoraTexto: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#2B2B2B',
+    letterSpacing: 1,
+  },
+  botonPrueba: {
+    marginTop: 'auto',
+    alignItems: 'center',
+    paddingVertical: 14,
+  },
+  botonPruebaTexto: {
+    fontSize: 14,
+    color: '#9A958C',
+    textDecorationLine: 'underline',
+  },
+});

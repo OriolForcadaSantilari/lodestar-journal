@@ -1,0 +1,35 @@
+{
+  "today": {
+    "title": "",
+    "placeholder": "",
+    "save": "",
+    "update": "",
+    "saved": "",
+    "savedMessage": "",
+    "emptyError": "",
+    "emptyErrorTitle": "",
+    "saveError": "",
+    "historyButton": "",
+    "settingsButton": ""
+  },
+  "history": {
+    "title": "",
+    "empty": "",
+    "delete": "",
+    "deleteConfirmTitle": "",
+    "deleteConfirmMessage": "",
+    "cancel": ""
+  },
+  "detail": {
+    "title": ""
+  },
+  "settings": {
+    "title": "",
+    "reminderLabel": "",
+    "permissionDenied": "",
+    "timeLabel": "",
+    "testButton": "",
+    "notificationTitle": "",
+    "notificationBody": ""
+  }
+}

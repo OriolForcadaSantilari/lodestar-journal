@@ -1,0 +1,35 @@
+{
+  "today": {
+    "title": "Hoy",
+    "placeholder": "Escribe aquí...",
+    "save": "Guardar",
+    "update": "Actualizar",
+    "saved": "Guardado ✓",
+    "savedMessage": "Tu respuesta se ha registrado por hoy. ✨",
+    "emptyError": "Escribe algo antes de guardar",
+    "emptyErrorTitle": "Aún no has escrito nada",
+    "saveError": "No se pudo guardar",
+    "historyButton": "Historial",
+    "settingsButton": "Ajustes"
+  },
+  "history": {
+    "title": "Historial",
+    "empty": "Aún no hay entradas. Vuelve mañana.",
+    "delete": "Borrar",
+    "deleteConfirmTitle": "Borrar entrada",
+    "deleteConfirmMessage": "¿Seguro que quieres borrar esta entrada? No se puede deshacer.",
+    "cancel": "Cancelar"
+  },
+  "detail": {
+    "title": "Entrada"
+  },
+  "settings": {
+    "title": "Ajustes",
+    "reminderLabel": "Recordatorio diario",
+    "permissionDenied": "Las notificaciones están desactivadas. Actívalas en los Ajustes de iOS para recibir tu recordatorio diario.",
+    "timeLabel": "Hora del recordatorio",
+    "testButton": "Enviar notificación de prueba",
+    "notificationTitle": "Tu momento de hoy",
+    "notificationBody": "Una pregunta te espera. ¿Qué tienes que contarte?"
+  }
+}
