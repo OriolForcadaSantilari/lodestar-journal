@@ -17,6 +17,10 @@ import {
   scheduleDailyReminder,
   sendTestNotification,
 } from '../notifications';
+import {
+  obtenerPreferenciaIdioma,
+  guardarPreferenciaIdioma,
+} from '../i18n';
 import { colors, font, glow } from '../theme';
 import CRTScreen from '../components/CRTScreen';
 
@@ -26,6 +30,12 @@ function fechaDesde(hora, minuto) {
   return d;
 }
 
+const IDIOMAS = [
+  { valor: 'auto', clave: 'settings.languageAuto' },
+  { valor: 'es', clave: 'settings.languageEs' },
+  { valor: 'en', clave: 'settings.languageEn' },
+];
+
 export default function SettingsScreen({ navigation }) {
   const { t } = useTranslation();
   const [cargando, setCargando] = useState(true);
@@ -33,6 +43,7 @@ export default function SettingsScreen({ navigation }) {
   const [hora, setHora] = useState(fechaDesde(21, 0));
   const [permisoDenegado, setPermisoDenegado] = useState(false);
   const [mostrarPicker, setMostrarPicker] = useState(false);
+  const [idiomaPref, setIdiomaPref] = useState('auto');
 
   useLayoutEffect(() => {
     navigation.setOptions({ title: t('settings.title') });
@@ -42,12 +53,15 @@ export default function SettingsScreen({ navigation }) {
   useFocusEffect(
     useCallback(() => {
       let activoEfecto = true;
-      obtenerAjustes().then((aj) => {
-        if (!activoEfecto) return;
-        setActivo(aj.recordatorioActivo);
-        setHora(fechaDesde(aj.hora, aj.minuto));
-        setCargando(false);
-      });
+      Promise.all([obtenerAjustes(), obtenerPreferenciaIdioma()]).then(
+        ([aj, pref]) => {
+          if (!activoEfecto) return;
+          setActivo(aj.recordatorioActivo);
+          setHora(fechaDesde(aj.hora, aj.minuto));
+          setIdiomaPref(pref);
+          setCargando(false);
+        }
+      );
       return () => {
         activoEfecto = false;
       };
@@ -95,14 +109,58 @@ export default function SettingsScreen({ navigation }) {
     }
   };
 
+  const alCambiarIdioma = async (pref) => {
+    if (pref === idiomaPref) return;
+    setIdiomaPref(pref);
+    await guardarPreferenciaIdioma(pref);
+    // Si hay recordatorio activo, lo reprogramamos para que el texto
+    // de la notificación coja el idioma recién aplicado.
+    if (activo) {
+      await scheduleDailyReminder(hora.getHours(), hora.getMinutes());
+    }
+  };
+
   if (cargando) {
-    return <CRTScreen><View style={styles.contenedor} /></CRTScreen>;
+    return (
+      <CRTScreen>
+        <View style={styles.contenedor} />
+      </CRTScreen>
+    );
   }
 
   return (
     <CRTScreen>
       <View style={styles.contenedor}>
-        <View style={styles.fila}>
+        <View style={styles.bloque}>
+          <Text style={styles.label}>{t('settings.languageLabel')}</Text>
+          <View style={styles.filaIdiomas}>
+            {IDIOMAS.map((op) => {
+              const seleccionado = op.valor === idiomaPref;
+              return (
+                <TouchableOpacity
+                  key={op.valor}
+                  style={[
+                    styles.botonIdioma,
+                    seleccionado && styles.botonIdiomaActivo,
+                  ]}
+                  activeOpacity={0.7}
+                  onPress={() => alCambiarIdioma(op.valor)}
+                >
+                  <Text
+                    style={[
+                      styles.botonIdiomaTexto,
+                      seleccionado && styles.botonIdiomaTextoActivo,
+                    ]}
+                  >
+                    {t(op.clave)}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+
+        <View style={[styles.bloque, styles.fila]}>
           <Text style={styles.label}>{t('settings.reminderLabel')}</Text>
           <Switch
             value={activo}
@@ -176,6 +234,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 28,
     paddingVertical: 32,
   },
+  bloque: {
+    marginBottom: 28,
+  },
   fila: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -186,16 +247,44 @@ const styles = StyleSheet.create({
     fontSize: 24,
     color: colors.green,
     ...glow(),
+    marginBottom: 12,
+  },
+  filaIdiomas: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  botonIdioma: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: colors.greenFaint,
+    borderRadius: 4,
+    backgroundColor: colors.surface,
+    paddingVertical: 12,
+    alignItems: 'center',
+  },
+  botonIdiomaActivo: {
+    borderColor: colors.green,
+    backgroundColor: '#10261A',
+  },
+  botonIdiomaTexto: {
+    fontFamily: font,
+    fontSize: 20,
+    color: colors.greenDim,
+  },
+  botonIdiomaTextoActivo: {
+    color: colors.green,
+    ...glow(),
   },
   aviso: {
     fontFamily: font,
     fontSize: 20,
     lineHeight: 26,
     color: colors.greenDim,
-    marginTop: 16,
+    marginTop: 4,
+    marginBottom: 16,
   },
   bloqueHora: {
-    marginTop: 32,
+    marginTop: 8,
   },
   picker: {
     marginTop: 8,

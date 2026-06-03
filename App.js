@@ -1,4 +1,5 @@
 import './src/i18n';
+import { useEffect, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet } from 'react-native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -6,6 +7,7 @@ import { NavigationContainer, DefaultTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useFonts, VT323_400Regular } from '@expo-google-fonts/vt323';
 import { colors, font } from './src/theme';
+import { inicializarIdiomaDesdeStorage } from './src/i18n';
 import TodayScreen from './src/screens/TodayScreen';
 import HistoryScreen from './src/screens/HistoryScreen';
 import EntryDetailScreen from './src/screens/EntryDetailScreen';
@@ -36,9 +38,14 @@ const headerStyles = {
 
 export default function App() {
   const [fuenteLista] = useFonts({ VT323_400Regular });
+  const [idiomaListo, setIdiomaListo] = useState(false);
 
-  if (!fuenteLista) {
-    // Pantalla de carga sin flash blanco mientras carga la fuente.
+  useEffect(() => {
+    inicializarIdiomaDesdeStorage().finally(() => setIdiomaListo(true));
+  }, []);
+
+  if (!fuenteLista || !idiomaListo) {
+    // Pantalla de carga sin flash blanco mientras cargan fuente e idioma.
     return <View style={styles.carga} />;
   }
 

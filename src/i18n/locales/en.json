@@ -1,37 +1,41 @@
 {
   "today": {
-    "title": "",
-    "stardate": "",
-    "queryLog": "",
-    "placeholder": "",
-    "save": "",
-    "update": "",
-    "saved": "",
-    "savedMessage": "",
-    "emptyError": "",
-    "emptyErrorTitle": "",
-    "saveError": "",
-    "historyButton": "",
-    "settingsButton": ""
+    "title": "SHIP'S LOG",
+    "stardate": "> STARDATE {{date}}",
+    "queryLog": "> QUERY_LOG:",
+    "placeholder": "> _ enter your log...",
+    "save": "[ SAVE LOG ]",
+    "update": "[ UPDATE LOG ]",
+    "saved": "LOG SAVED",
+    "savedMessage": "Entry archived in the ship's log. ✦",
+    "emptyError": "Enter your log before filing it.",
+    "emptyErrorTitle": "EMPTY LOG",
+    "saveError": "Could not file the log",
+    "historyButton": "ARCHIVE",
+    "settingsButton": "CONTROL"
   },
   "history": {
-    "title": "",
-    "empty": "",
-    "delete": "",
-    "deleteConfirmTitle": "",
-    "deleteConfirmMessage": "",
-    "cancel": ""
+    "title": "ARCHIVE",
+    "empty": "> NO LOGS FOUND. RETURN IN THE NEXT CYCLE.",
+    "delete": "[ DELETE ]",
+    "deleteConfirmTitle": "DELETE LOG",
+    "deleteConfirmMessage": "Delete this log permanently from the ship's record? This can't be undone.",
+    "cancel": "CANCEL"
   },
   "detail": {
-    "title": ""
+    "title": "LOG // STARDATE {{date}}"
   },
   "settings": {
-    "title": "",
-    "reminderLabel": "",
-    "permissionDenied": "",
-    "timeLabel": "",
-    "testButton": "",
-    "notificationTitle": "",
-    "notificationBody": ""
+    "title": "CONTROL PANEL",
+    "reminderLabel": "DAILY REMINDER",
+    "permissionDenied": "> NOTIFICATIONS DISABLED. Enable them in iOS Settings to receive your daily log signal.",
+    "timeLabel": "SIGNAL TIME",
+    "testButton": "[ SEND TEST SIGNAL ]",
+    "notificationTitle": "LOG PENDING",
+    "notificationBody": "The ship's log awaits today's entry.",
+    "languageLabel": "LANGUAGE",
+    "languageAuto": "AUTO",
+    "languageEs": "Español",
+    "languageEn": "English"
   }
 }

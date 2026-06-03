@@ -26,12 +26,18 @@ import Typewriter from '../components/Typewriter';
 const LIMITE = 280;
 
 export default function TodayScreen({ navigation }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const hoy = useMemo(() => new Date(), []);
   const clave = useMemo(() => claveFecha(hoy), [hoy]);
-  const fechaTexto = useMemo(() => formatearFecha(hoy), [hoy]);
+  const fechaTexto = useMemo(
+    () => formatearFecha(hoy),
+    [hoy, i18n.language]
+  );
   const stardateTexto = useMemo(() => stardate(hoy), [hoy]);
-  const pregunta = useMemo(() => preguntaDelDia(hoy), [hoy]);
+  const pregunta = useMemo(
+    () => preguntaDelDia(hoy),
+    [hoy, i18n.language]
+  );
   const [respuesta, setRespuesta] = useState('');
   const [cargado, setCargado] = useState(false);
   const [yaTeniaRegistro, setYaTeniaRegistro] = useState(false);

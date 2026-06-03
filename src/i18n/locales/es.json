@@ -32,6 +32,10 @@
     "timeLabel": "HORA DEL AVISO",
     "testButton": "[ ENVIAR SEÑAL DE PRUEBA ]",
     "notificationTitle": "BITÁCORA PENDIENTE",
-    "notificationBody": "El diario de a bordo espera tu registro de hoy."
+    "notificationBody": "El diario de a bordo espera tu registro de hoy.",
+    "languageLabel": "IDIOMA",
+    "languageAuto": "AUTO",
+    "languageEs": "Español",
+    "languageEn": "English"
   }
 }
