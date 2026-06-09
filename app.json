@@ -23,10 +23,12 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#060d09"
+        "backgroundColor": "#060d09",
+        "monochromeImage": "./assets/adaptive-icon-monochrome.png"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.oriolforcada.lodestar"
+      "package": "com.oriolforcada.lodestar",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
